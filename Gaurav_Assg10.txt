@@ -1,0 +1,208 @@
+> show databases
+Studentdb     0.000GB
+admin         0.000GB
+book          0.000GB
+config        0.000GB
+local         0.000GB
+mongo_assign  0.000GB
+> use Studentdb
+switched to db Studentdb
+> show collections
+> db.createCollection("student")
+{ "ok" : 1 }
+>
+> db.student.insertMany([{name :"Gaurav",roll_no:101,prn:"PRN001",branch:"CSE",marks:{TOC:85,DBMS:90,OS:78,CNS:87}},{name:"Ram",roll_no:102,prn:"PRN002",branch:"MECH",marks:{TOC:92,DBMS:88,OS:80,CNS:90}},{name:"Rohan",roll_no:104,prn:"PRN004",branch:"CSE",marks:{TOC:95,DBMS:90,OS:78,CNS:86}},{name:"Sita",roll_no:103,prn:"PRN003",branch:"ECE",marks:{TOC:92,DBMS:96,OS:89,CNS:85}}]);
+{
+	"acknowledged" : true,
+	"insertedIds" : [
+		ObjectId("68c160f54a717062f833ad12"),
+		ObjectId("68c160f54a717062f833ad13"),
+		ObjectId("68c160f54a717062f833ad14"),
+		ObjectId("68c160f54a717062f833ad15")
+	]
+}
+>
+> db.student.find()
+{ "_id" : ObjectId("68c160f54a717062f833ad12"), "name" : "Gaurav", "roll_no" : 101, "prn" : "PRN001", "branch" : "CSE", "marks" : { "TOC" : 85, "DBMS" : 90, "OS" : 78, "CNS" : 87 } }
+{ "_id" : ObjectId("68c160f54a717062f833ad13"), "name" : "Ram", "roll_no" : 102, "prn" : "PRN002", "branch" : "MECH", "marks" : { "TOC" : 92, "DBMS" : 88, "OS" : 80, "CNS" : 90 } }
+{ "_id" : ObjectId("68c160f54a717062f833ad14"), "name" : "Rohan", "roll_no" : 104, "prn" : "PRN004", "branch" : "CSE", "marks" : { "TOC" : 95, "DBMS" : 90, "OS" : 78, "CNS" : 86 } }
+{ "_id" : ObjectId("68c160f54a717062f833ad15"), "name" : "Sita", "roll_no" : 103, "prn" : "PRN003", "branch" : "ECE", "marks" : { "TOC" : 92, "DBMS" : 96, "OS" : 89, "CNS" : 85 } }
+> db.student.find().pretty();
+{
+	"_id" : ObjectId("68c160f54a717062f833ad12"),
+	"name" : "Gaurav",
+	"roll_no" : 101,
+	"prn" : "PRN001",
+	"branch" : "CSE",
+	"marks" : {
+		"TOC" : 85,
+		"DBMS" : 90,
+		"OS" : 78,
+		"CNS" : 87
+	}
+}
+{
+	"_id" : ObjectId("68c160f54a717062f833ad13"),
+	"name" : "Ram",
+	"roll_no" : 102,
+	"prn" : "PRN002",
+	"branch" : "MECH",
+	"marks" : {
+		"TOC" : 92,
+		"DBMS" : 88,
+		"OS" : 80,
+		"CNS" : 90
+	}
+}
+{
+	"_id" : ObjectId("68c160f54a717062f833ad14"),
+	"name" : "Rohan",
+	"roll_no" : 104,
+	"prn" : "PRN004",
+	"branch" : "CSE",
+	"marks" : {
+		"TOC" : 95,
+		"DBMS" : 90,
+		"OS" : 78,
+		"CNS" : 86
+	}
+}
+{
+	"_id" : ObjectId("68c160f54a717062f833ad15"),
+	"name" : "Sita",
+	"roll_no" : 103,
+	"prn" : "PRN003",
+	"branch" : "ECE",
+	"marks" : {
+		"TOC" : 92,
+		"DBMS" : 96,
+		"OS" : 89,
+		"CNS" : 85
+	}
+}
+> db.student.aggregate([{$group:{_id:"$branch",total_student:($sum:1}}}]);
+2025-09-10T17:01:58.253+0530 E QUERY    [thread1] SyntaxError: missing ) in parenthetical @(shell):1:64
+> db.student.aggregate([{$group:{_id:"$branch",total_student:{$sum:1}}}]);
+{ "_id" : "ECE", "total_student" : 1 }
+{ "_id" : "MECH", "total_student" : 1 }
+{ "_id" : "CSE", "total_student" : 2 }
+> db.student.aggregate([{$addFields:{totalMarks:{$sum:["$marks.TOC","$marks.DBMS","$marks.OS"]}}},{$sort:{brach:1,totalMarks:-1}},{$group:{_id:"$branch",topper:{$first:"$$ROOT"}}},{$replaceRoot:{newRoot:"$topper"}}]);
+{ "_id" : ObjectId("68c160f54a717062f833ad13"), "name" : "Ram", "roll_no" : 102, "prn" : "PRN002", "branch" : "MECH", "marks" : { "TOC" : 92, "DBMS" : 88, "OS" : 80, "CNS" : 90 }, "totalMarks" : 260 }
+{ "_id" : ObjectId("68c160f54a717062f833ad14"), "name" : "Rohan", "roll_no" : 104, "prn" : "PRN004", "branch" : "CSE", "marks" : { "TOC" : 95, "DBMS" : 90, "OS" : 78, "CNS" : 86 }, "totalMarks" : 263 }
+{ "_id" : ObjectId("68c160f54a717062f833ad15"), "name" : "Sita", "roll_no" : 103, "prn" : "PRN003", "branch" : "ECE", "marks" : { "TOC" : 92, "DBMS" : 96, "OS" : 89, "CNS" : 85 }, "totalMarks" : 277 }
+> 
+> db.student.aggregate([{$group:{_id:null,maxTOC:{$max:"$marks.TOC"}}}]);
+{ "_id" : null, "maxTOC" : 95 }
+> db.student.aggregate([{$group:{_id:null,maxDBMS:{$max:"$marks.DBMS"}}}]);
+{ "_id" : null, "maxDBMS" : 96 }
+> db.student.aggregate([{$group:{_id:null,maxOS:{$max:"$marks.OS"}}}]);
+{ "_id" : null, "maxOS" : 89 }
+> db.student.aggregate([{$group:{_id:null,maxCNS:{$max:"$marks.CNS"}}}]);
+{ "_id" : null, "maxCNS" : 90 }
+> db.student.find({"marks.DBMS":<max value>});
+2025-09-10T17:09:36.902+0530 E QUERY    [thread1] SyntaxError: expected expression, got '<' @(shell):1:30
+> db.student.find({"marks.CNS":<max value>});
+2025-09-10T17:10:15.350+0530 E QUERY    [thread1] SyntaxError: expected expression, got '<' @(shell):1:29
+> db.student.find({"marks.CNS":<90>});
+2025-09-10T17:11:03.789+0530 E QUERY    [thread1] SyntaxError: expected expression, got '<' @(shell):1:29
+> db.student.find({"marks.CNS":90});
+{ "_id" : ObjectId("68c160f54a717062f833ad13"), "name" : "Ram", "roll_no" : 102, "prn" : "PRN002", "branch" : "MECH", "marks" : { "TOC" : 92, "DBMS" : 88, "OS" : 80, "CNS" : 90 } }
+> db.student.find({"marks.OS":90});
+> db.student.find({"marks.OS":89});
+{ "_id" : ObjectId("68c160f54a717062f833ad15"), "name" : "Sita", "roll_no" : 103, "prn" : "PRN003", "branch" : "ECE", "marks" : { "TOC" : 92, "DBMS" : 96, "OS" : 89, "CNS" : 85 } }
+> db.student.find({"marks.DBMS":96});
+{ "_id" : ObjectId("68c160f54a717062f833ad15"), "name" : "Sita", "roll_no" : 103, "prn" : "PRN003", "branch" : "ECE", "marks" : { "TOC" : 92, "DBMS" : 96, "OS" : 89, "CNS" : 85 } }
+> db.student.find({"marks.TOC":95});
+{ "_id" : ObjectId("68c160f54a717062f833ad14"), "name" : "Rohan", "roll_no" : 104, "prn" : "PRN004", "branch" : "CSE", "marks" : { "TOC" : 95, "DBMS" : 90, "OS" : 78, "CNS" : 86 } }
+> 
+> 
+> 
+> db.student.aggregate([{$group:{_id:null,avg_TOC:{$avg:"$marks.TOC"},avg_DBMS:{$avg:"$marks.DBMS"},avg_OS:{$avg:"$marks.OS"},avg_CNS:{$avg:"$marks.CNS"}}}]);
+{ "_id" : null, "avg_TOC" : 91, "avg_DBMS" : 91, "avg_OS" : 81.25, "avg_CNS" : 87 }
+> 
+> 
+> db.student.aggregate([{$group:{_id:null,minTOC:{$min:"$marks.TOC"}}}]);
+{ "_id" : null, "minTOC" : 85 }
+> db.student.find({"marks.TOC":85});
+{ "_id" : ObjectId("68c160f54a717062f833ad12"), "name" : "Gaurav", "roll_no" : 101, "prn" : "PRN001", "branch" : "CSE", "marks" : { "TOC" : 85, "DBMS" : 90, "OS" : 78, "CNS" : 87 } }
+> 
+> 
+> db.student.getIndexes();
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "Studentdb.student"
+	}
+]
+> 
+> 
+> db.student.createIndex({roll_no:1});
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1
+}
+> db.student.createIndex({prn:1});
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 2,
+	"numIndexesAfter" : 3,
+	"ok" : 1
+}
+> db.student.getIndexes();
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "Studentdb.student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"roll_no" : 1
+		},
+		"name" : "roll_no_1",
+		"ns" : "Studentdb.student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"prn" : 1
+		},
+		"name" : "prn_1",
+		"ns" : "Studentdb.student"
+	}
+]
+> 
+> 
+> db.student.dropIndex("roll_no_1");
+{ "nIndexesWas" : 3, "ok" : 1 }
+> db.student.getIndexes();
+[
+	{
+		"v" : 2,
+		"key" : {
+			"_id" : 1
+		},
+		"name" : "_id_",
+		"ns" : "Studentdb.student"
+	},
+	{
+		"v" : 2,
+		"key" : {
+			"prn" : 1
+		},
+		"name" : "prn_1",
+		"ns" : "Studentdb.student"
+	}
+]
+> 
+

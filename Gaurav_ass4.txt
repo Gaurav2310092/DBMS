@@ -1,0 +1,394 @@
+mysql> delimiry //
+    -> ^C
+mysql> show tables//
+    -> ^C
+mysql> shw tables;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'shw tables' at line 1
+mysql> show tables;
+Empty set (0.00 sec)
+
+mysql> delemiry //
+    -> ^C
+mysql> create table Area(radius int,area int);
+Query OK, 0 rows affected (0.21 sec)
+
+mysql> delimiter //
+mysql> create procedure calc_area
+    -> begin
+    -> for r in 5..9 loop
+    -> insert into Area(radius,area)
+    -> values(r,3*r*r);
+    -> end loop;
+    -> end//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'begin
+for r in 5..9 loop
+insert into Area(radius,area)
+values(r,3*r*r);
+end loop' at line 2
+mysql> create procedure calc_area is  begin for r in 5..9 loop insert into Area(radius,area) values(r,3*r*r); end loop; end//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'is  begin for r in 5..9 loop insert into Area(radius,area) values(r,3*r*r); end ' at line 1
+mysql> create procedure calc_area is begin for r in 5..9 loop insert into Area(radius,area) values(r,3*r*r); end loop; end//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'is begin for r in 5..9 loop insert into Area(radius,area) values(r,3*r*r); end l' at line 1
+mysql> CREATE OR REPLACE PROCEDURE insert_circle_areas IS
+    -> BEGIN
+    ->   INSERT INTO area (radius, area) VALUES (5, 3.14159 * 5 * 5);
+    ->   INSERT INTO area (radius, area) VALUES (6, 3.14159 * 6 * 6);
+    ->   INSERT INTO area (radius, area) VALUES (7, 3.14159 * 7 * 7);
+    ->   INSERT INTO area (radius, area) VALUES (8, 3.14159 * 8 * 8);
+    ->   INSERT INTO area (radius, area) VALUES (9, 3.14159 * 9 * 9);
+    ->   COMMIT;
+    -> END//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'PROCEDURE insert_circle_areas IS
+BEGIN
+  INSERT INTO area (radius, area) VALUES ' at line 1
+mysql> CREATE OR REPLACE PROCEDURE insert_circle_areas IS
+    -> BEGIN
+    ->   INSERT INTO area (radius, area) VALUES (5, 3.14159 * 5 * 5);
+    ->   INSERT INTO area (radius, area) VALUES (6, 3.14159 * 6 * 6);
+    ->   INSERT INTO area (radius, area) VALUES (7, 3.14159 * 7 * 7);
+    ->   INSERT INTO area (radius, area) VALUES (8, 3.14159 * 8 * 8);
+    ->   INSERT INTO area (radius, area) VALUES (9, 3.14159 * 9 * 9);
+    ->   COMMIT;
+    -> END;
+    -> //
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'PROCEDURE insert_circle_areas IS
+BEGIN
+  INSERT INTO area (radius, area) VALUES ' at line 1
+mysql> CREATE OR REPLACE PROCEDURE insert_circle_areas IS
+    -> BEGIN
+    ->   FOR r IN 5..9 LOOP
+    ->     INSERT INTO Area (radius, area)
+    ->     VALUES (r, 3.14159 * r * r);
+    ->   END LOOP;
+    ->   COMMIT;
+    -> END//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'PROCEDURE insert_circle_areas IS
+BEGIN
+  FOR r IN 5..9 LOOP
+    INSERT INTO Area' at line 1
+mysql> CREATE PROCEDURE insert_circle_areas IS
+    -> BEGIN
+    ->   FOR r IN 5..9 LOOP
+    ->     INSERT INTO Area (radius, area)
+    ->     VALUES (r, 3.14159 * r * r);
+    ->   END LOOP;
+    ->   COMMIT;
+    -> END//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'IS
+BEGIN
+  FOR r IN 5..9 LOOP
+    INSERT INTO Area (radius, area)
+    VALUES (r,' at line 1
+mysql> CREATE PROCEDURE insert_circle_areas()
+    -> BEGIN
+    ->   DECLARE r INT DEFAULT 5;
+    ->   WHILE r <= 9 DO
+    ->     INSERT INTO Area (radius, area) VALUES (r, 3.14159 * r * r);
+    ->     SET r = r + 1;
+    ->   END WHILE;
+    -> END//
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> call insert_circle_area()//
+ERROR 1305 (42000): PROCEDURE Circle.insert_circle_area does not exist
+mysql> call insert_circle_areas()//
+Query OK, 1 row affected (0.26 sec)
+
+mysql> select* from Area//
++--------+------+
+| radius | area |
++--------+------+
+|      5 |   79 |
+|      6 |  113 |
+|      7 |  154 |
+|      8 |  201 |
+|      9 |  254 |
++--------+------+
+5 rows in set (0.00 sec)
+
+mysql> ^C
+mysql> 
+mysql> create procedure calc_area(in r)
+    -> begin
+    -> ^C
+mysql> 
+mysql> CREATE PROCEDURE calc_area(INOUT r INT)
+    -> BEGIN
+    ->   DECLARE a DOUBLE;
+    ->   SET a = 3.14159 * r * r;
+    -> 
+    ->   INSERT INTO Area (radius, area)
+    ->   VALUES (r, a);
+    -> END //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call calc_area(7)//
+ERROR 1414 (42000): OUT or INOUT argument 1 for routine Circle.calc_area is not a variable or NEW pseudo-variable in BEFORE trigger
+mysql> call calc_area(7);
+    -> //
+ERROR 1414 (42000): OUT or INOUT argument 1 for routine Circle.calc_area is not a variable or NEW pseudo-variable in BEFORE trigger
+mysql> CREATE PROCEDURE calculated_area(IN r INT)
+    -> BEGIN
+    ->   DECLARE a DOUBLE;
+    ->   SET a = 3.14159 * r * r;
+    -> 
+    ->   INSERT INTO Area (radius, area)
+    ->   VALUES (r, a);
+    -> END //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> CALL calculated_area(7);
+    -> //
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select* from Area//
++--------+------+
+| radius | area |
++--------+------+
+|      5 |   79 |
+|      6 |  113 |
+|      7 |  154 |
+|      8 |  201 |
+|      9 |  254 |
+|      7 |  154 |
++--------+------+
+6 rows in set (0.00 sec)
+
+mysql> delete Area//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> delete from Area//
+Query OK, 6 rows affected (0.07 sec)
+
+mysql> call calculated_area(6)//
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select* from Area;
+    -> //
++--------+------+
+| radius | area |
++--------+------+
+|      6 |  113 |
++--------+------+
+1 row in set (0.00 sec)
+
+mysql> select distinct c.role from MovieCast c join Actor a on c.a_id=a.a_id where a.salary>20000;
+    -> ^C
+mysql> create table Borrower(Roll_no int ,Name varchar(30),DateofIssue date,NameofBook varchar(20),Status varchar(10));
+    -> //
+Query OK, 0 rows affected (0.20 sec)
+
+mysql> create table Fine(Roll_no int , Date date ,Amt int);
+    -> //
+Query OK, 0 rows affected (0.33 sec)
+
+mysql> declare v_Roll_no Borrower.Roll_no%type:-&Enter_Roll_no;
+    -> v_NameofBook Borrower.NameofBook%type:="&Enter_Name_of_Book";
+    -> v_DateofIssue date;
+    -> v_Status char(1);
+    -> v_Days int;
+    -> v_FineAmt int :=0;
+    -> e_No_Revord_found exception;
+    -> pragma exception_init(e_No_Record_found,-01403):
+    -> ;
+    -> begin
+    -> select DateofIssue,Status
+    -> info v_DateofIssue,v_Status
+    -> from Borrower
+    -> where Roll_no=v_Roll_no and NameofBook=v_NameofBook;
+    -> is v_Days>30 then 
+    -> v_FineAmt:=v_Days*50;
+    -> elseif v_Days>15 then 
+    -> v_FineAmt:=v_Days*5;
+    -> else
+    -> v_FineAmt:=0
+    -> end if;
+    -> update Borrower 
+    -> set Status="R"
+    -> mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Circle             |
+| Gaurav             |
+| Movie              |
+| abhay_assg4        |
+| abhay_assgn2       |
+| abhay_assgn5       |
+| ass4               |
+| ass5               |
+| ass6               |
+| ass6_7361          |
+| ass7               |
+| assgn2             |
+| demo               |
+| mock               |
+| mockTest           |
+| mysql              |
+| performance_schema |
+| student            |
+| students           |
+| sys                |
+| vanshika_ass2      |
++--------------------+
+22 rows in set (0.13 sec)
+
+mysql> use demo;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> Create table borrower(rollno Int primary key,name varchar(50),date of issue date,name of book varchar(50),status char(1) check(status IN ('I','R')));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'of issue date,name of book varchar(50),status char(1) check(status IN ('I','R'))' at line 1
+mysql> Create table borrower(rollno Int primary key,name varchar(50),dateofissue date,nameofbook varchar(50),status char(1) check(status IN ('I','R')));
+Query OK, 0 rows affected (0.21 sec)
+
+mysql> create table fine(rollno int, date date,amt int, foreign key(rollno) references borrower(rollno));
+Query OK, 0 rows affected (0.27 sec)
+
+mysql> insert into borrower(rollno,name,dateofissue,nameofbook,status) values(12,'Gaurav','2025-02-08','operating System','I'),(23,'Dushyant','2025-07-10','Microprocessor','I'),(36,'Navneet','2025-06-28','Cyber security','I'),(34,'Mohitesh',2025-06-20','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','ML','I');
+    '> 
+    '> insert into borrower(rollno,name,dateofissue,nameofbook,status) values(12,'Gaurav','2025-02-08','operating System','I'),(23,'Dushyant','2025-07-10','Microprocessor','I'),(36,'Navneet','2025-06-28','Cyber security','I'),(34,'Mohitesh',2025-06-20','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','ML','I');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','' at line 1
+mysql> insert into borrower(rollno,name,dateofissue,nameofbook,status) values(12,'Gaurav','2025-02-08','operating System','I'),(23,'Dushyant','2025-07-10','Microprocessor','I'),(36,'Navneet','2025-06-28','Cyber security','I'),(34,'Mohitesh',2025-06-20','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','ML','I');
+
+insert into borrower(rollno,name,dateofissue,nameofbook,status) values(12,'Gaurav','2025-02-08','operating System','I'),(23,'Dushyant','2025-07-10','Microprocessor','I'),(36,'Navneet','2025-06-28','Cyber security','I'),(34,'Mohitesh',2025-06-20','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','ML','I');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','' at line 1
+mysql> insert into borrower(rollno,name,dateofissue,nameofbook,status) values(12,'Gaurav','2025-02-08','operating System','I'),(23,'Dushyant','2025-07-10','Microprocessor','I'),(36,'Navneet','2025-06-28','Cyber security','I'),(34,'Mohitesh',2025-06-20','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','ML','I');
+
+insert into borrower(rollno,name,dateofissue,nameofbook,status) values(12,'Gaurav','2025-02-08','operating System','I'),(23,'Dushyant','2025-07-10','Microprocessor','I'),(36,'Navneet','2025-06-28','Cyber security','I'),(34,'Mohitesh','2025-06-20','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','ML','I');
+    '> 
+    '> 
+    '> insert into borrower(rollno,name,dateofissue,nameofbook,status) values(12,'Gaurav','2025-02-08','operating System','I'),(23,'Dushyant','2025-07-10','Microprocessor','I'),(36,'Navneet','2025-06-28','Cyber security','I'),(34,'Mohitesh',2025-06-20','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','ML','I');
+
+insert into borrower(rollno,name,dateofissue,nameofbook,status) values(12,'Gaurav','2025-02-08','operating System','I'),(23,'Dushyant','2025-07-10','Microprocessor','I'),(36,'Navneet','2025-06-28','Cyber security','I'),(34,'Mohitesh','2025-06-20','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','ML','I');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '','DSA','I'),(27,'Jayendra','2025-07-10','AI','I'),(29,'Mahendra','2025-07-25','' at line 1
+Query OK, 6 rows affected (0.04 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> select* from borrower;
++--------+----------+-------------+------------------+--------+
+| rollno | name     | dateofissue | nameofbook       | status |
++--------+----------+-------------+------------------+--------+
+|     12 | Gaurav   | 2025-02-08  | operating System | I      |
+|     23 | Dushyant | 2025-07-10  | Microprocessor   | I      |
+|     27 | Jayendra | 2025-07-10  | AI               | I      |
+|     29 | Mahendra | 2025-07-25  | ML               | I      |
+|     34 | Mohitesh | 2025-06-20  | DSA              | I      |
+|     36 | Navneet  | 2025-06-28  | Cyber security   | I      |
++--------+----------+-------------+------------------+--------+
+6 rows in set (0.00 sec)
+
+mysql> delimiter $$
+mysql> create procedure returnbook(IN p_rollno INT , IN p_book varchar(40))
+    -> begin
+    -> declare v_days INT default 0;
+    -> declare v_fine INT default 0;
+    -> if(select count(*) from borrower where rollno=p_rollno and nameofbook=p_book and status='I' )>0 then 
+    -> select concat('book "',p_book,'" has been charged for roll no ',p_rollno,' and is not available for retuen or already returned.') AS message;
+    -> else 
+    -> select datediff(currdate(),dateofissue) into v_days
+    -> from borrower
+    -> where rollno=p_rollno
+    -> and status ='I';
+    -> if v_days>30 then 
+    -> set v_fine=v_days*50;
+    -> elseif v_days>15 and v_days<=30 then 
+    -> set v_fine=v_days*5;
+    -> end if;
+    -> if v_fine>0 then 
+    -> insert into fine(rollno,date,amt) values(p_rollno,currdate(),v_fine);
+    -> select concat('Fine of rs ',v_fine,'has been charged for rollno',p_rollno,'on book"',p_book,'".')AS message;
+    -> select concat('NO fine for rollno,'p_rollno)AS message;
+    -> end if;
+    -> 
+    -> update borrower 
+    -> set status ='R'
+    -> where rollno=p_rollno and nameofbook=p_book;
+    -> end if 
+    -> end$$
+ERROR 1583 (42000): Incorrect parameters in the call to native function 'concat'
+mysql> create procedure returnbook(IN p_rollno INT , IN p_book varchar(40)) begin declare v_days INT default 0; declare v_fine INT default 0; if(select count(*) from borrower where rollno=p_rollno and nameofbook=p_book and status='I' )>0 then  select concat('book "',p_book,'" has been charged for roll no ',p_rollno,' and is not available for retuen or already returned.') AS message; else  select datediff(currdate(),dateofissue) into v_days from borrower where rollno=p_rollno and status ='I'; if v_days>30 then  set v_fine=v_days*50; elseif v_days>15 and v_days<=30 then  set v_fine=v_days*5; end if; if v_fine>0 then  insert into fine(rollno,date,amt) values(p_rollno,currdate(),v_fine); select concat('Fine of rs ',v_fine,'has been charged for rollno',p_rollno,'on book"',p_book,'".')AS message; select concat('NO fine for rollno',p_rollno)AS message; end if;  update borrower  set status ='R' where rollno=p_rollno and nameofbook=p_book; end if  end$$
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'end' at line 1
+mysql> 
+mysql> show databases;
+    -> $$
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Circle             |
+| Gaurav             |
+| Movie              |
+| abhay_assg4        |
+| abhay_assgn2       |
+| abhay_assgn5       |
+| ass4               |
+| ass5               |
+| ass6               |
+| ass6_7361          |
+| ass7               |
+| assgn2             |
+| demo               |
+| mock               |
+| mockTest           |
+| mysql              |
+| performance_schema |
+| student            |
+| students           |
+| sys                |
+| vanshika_ass2      |
++--------------------+
+22 rows in set (0.01 sec)
+
+mysql> use ass4
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> show tables
+    -> $$
++----------------+
+| Tables_in_ass4 |
++----------------+
+| Borrower       |
+| Fine           |
+| areas          |
++----------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from Borrower$$
++--------+-------+-------------+-------------------+--------+
+| Rollno | Name  | DateofIssue | NameofBook        | Status |
++--------+-------+-------------+-------------------+--------+
+|    102 | Priya | 2025-06-10  | Operating Systems | R      |
+|    103 | Ravi  | 2025-07-10  | Computer Networks | I      |
+|    104 | Neha  | 2025-06-01  | Java Programming  | I      |
+|    105 | Arjun | 2025-07-01  | Data Structures   | I      |
+|    106 | Sneha | 2025-07-20  | Machine Learning  | I      |
+|    107 | Rahul | 2025-06-15  | Cloud Computing   | R      |
++--------+-------+-------------+-------------------+--------+
+6 rows in set (0.02 sec)
+
+mysql> call returnbook(103,'Computer Networks');
+    -> $$
+ERROR 1305 (42000): PROCEDURE ass4.returnbook does not exist
+mysql> delimiter;
+    -> 
+    -> $$
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'delimiter' at line 1
+mysql> delimiter :
+mysql> delimiter ;
+mysql> show procedures;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'procedures' at line 1
+mysql> call return_book(103,'Computer Networks');
++-----------------------------+---------------+---------+
+| Message                     | Days_Borrowed | Fine    |
++-----------------------------+---------------+---------+
+| Book returned successfully. |            55 | 1325.00 |
++-----------------------------+---------------+---------+
+1 row in set (0.13 sec)
+
+Query OK, 0 rows affected (0.13 sec)
+
+mysql> 

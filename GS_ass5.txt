@@ -1,0 +1,100 @@
+mysql> delimiter $$
+mysql> create procedure proc_grade()
+    -> begin
+    -> declare done int default false;
+    -> declare v_name varchar(50);
+    -> declare v_marks int;
+    -> declare v_class varchar(30);
+    -> declare v_roll int default 0;
+    -> declare cur cursor for select name, total_marks from stud_marks;
+    -> declare continue handler for not found set done = true;
+    -> declare exit handler for sqlexception
+    -> begin
+    -> rollback;
+    -> signal sqlstate '45000' set message_text = 'an error occurred while processing student grades';
+    -> end;
+    -> start transaction;
+    -> delete from result;
+    -> open cur;
+    -> read_loop: loop
+    -> fetch cur into v_name, v_marks;
+    -> if done then
+    -> leave read_loop;
+    -> end if;
+    -> if v_marks <= 1500 and v_marks >= 990 then
+    -> set v_class = 'distinction';
+    -> elseif v_marks between 900 and 989 then
+    -> set v_class = 'first class';
+    -> elseif v_marks between 825 and 899 then
+    -> set v_class = 'higher second class';
+    -> else
+    -> set v_class = 'no category';
+    -> end if;
+    -> set v_roll = v_roll + 1;
+    -> insert into result (roll, name, class) values (v_roll, v_name, v_class);
+    -> end loop;
+    -> close cur;
+    -> commit;
+    -> end$$
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '  DECLARE done INT DEFAULT 0;
+DECLARE n_id INT;
+ DECLARE n_name VARC' at line 3
+mysql> create procedure proc_grade()
+    -> begin
+    -> declare done int default false;
+    -> declare v_name varchar(50);
+    -> declare v_marks int;
+    -> declare v_class varchar(30);
+    -> declare v_roll int default 0;
+    -> declare cur cursor for select name, total_marks from stud_marks;
+    -> declare continue handler for not found set done = true;
+    -> declare exit handler for sqlexception
+    -> begin
+    -> rollback;
+    -> signal sqlstate '45000' set message_text = 'an error occurred while processing student grades';
+    -> end;
+    -> start transaction;
+    -> delete from result;
+    -> open cur;
+    -> read_loop: loop
+    -> fetch cur into v_name, v_marks;
+    -> if done then
+    -> leave read_loop;
+    -> end if;
+    -> if v_marks <= 1500 and v_marks >= 990 then
+    -> set v_class = 'distinction';
+    -> elseif v_marks between 900 and 989 then
+    -> set v_class = 'first class';
+    -> elseif v_marks between 825 and 899 then
+    -> set v_class = 'higher second class';
+    -> else
+    -> set v_class = 'no category';
+    -> end if;
+    -> set v_roll = v_roll + 1;
+    -> insert into result (roll, name, class) values (v_roll, v_name, v_class);
+    -> end loop;
+    -> close cur;
+    -> commit;
+    -> end$$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+mysql> call proc_grae();
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'open cur' at line 1
+mysql> call proc_grade();
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> select * from result;
+
++------+-------+---------------------+
+| roll | name  | class               |
++------+-------+---------------------+
+|    1 | ram   | distinction         |
+|    2 | rohan | first class         |
+|    3 | ravi  | higher second class |
+|    4 | rajiv | no category         |
+|    5 | rocky | distinction         |
++------+-------+---------------------+
+5 rows in set (0.00 sec)
+
+mysql> 

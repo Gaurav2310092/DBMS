@@ -1,0 +1,147 @@
+mysql> create database Gaurav_ass7;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Circle             |
+| Gaurav             |
+| Gaurav_ass5        |
+| Gaurav_ass7        |
+| Movie              |
+| abhay_assg4        |
+| abhay_assgn2       |
+| abhay_assgn5       |
+| ass4               |
+| ass5               |
+| ass6               |
+| ass6_7361          |
+| ass7               |
+| assgn2             |
+| assignment6        |
+| demo               |
+| mock               |
+| mockTest           |
+| mysql              |
+| performance_schema |
+| student            |
+| students           |
+| sys                |
+| testdb             |
+| vanshika_ass2      |
++--------------------+
+26 rows in set (0.00 sec)
+
+mysql> use Gaurav_ass7;
+Database changed
+mysql> show tables;
+Empty set (0.00 sec)
+
+mysql> create table library(book_id int primary key,book_name varchar(100),author varchar(100));
+Query OK, 0 rows affected (0.24 sec)
+
+mysql> insert into library(book_id,book_name,author) values(1,'My Book','Gaurav'),(2,'Full Story','Ram'),(3,'College Days','Navneet'),(4,'Doremon','Sunita'),(5,'MS Dhoni','Mahender');
+Query OK, 5 rows affected (0.06 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select* from library;
++---------+--------------+----------+
+| book_id | book_name    | author   |
++---------+--------------+----------+
+|       1 | My Book      | Gaurav   |
+|       2 | Full Story   | Ram      |
+|       3 | College Days | Navneet  |
+|       4 | Doremon      | Sunita   |
+|       5 | MS Dhoni     | Mahender |
++---------+--------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> create table library_audit(audit_id int auto_increment primary key,book_id int,book_name varchar(100),author varchar(100), action_date datetime,action_type varchar(10));
+Query OK, 0 rows affected (0.35 sec)
+
+mysql> desc library_audit;
++-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| audit_id    | int(11)      | NO   | PRI | NULL    | auto_increment |
+| book_id     | int(11)      | YES  |     | NULL    |                |
+| book_name   | varchar(100) | YES  |     | NULL    |                |
+| author      | varchar(100) | YES  |     | NULL    |                |
+| action_date | datetime     | YES  |     | NULL    |                |
+| action_type | varchar(10)  | YES  |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+mysql> delimiter //
+mysql> 
+mysql> create trigger trg_library_update
+    -> after update on library
+    -> for each row
+    -> begin
+    -> insert into library_audit(book_id,book_name,author,action_date,action_type) values(old.book_id,old.book_name,old.author,now(),'update');
+    -> end;
+    -> //
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> create trigger trg_library_delete
+    -> after delete on lbrary
+    -> for each row
+    -> begin
+    -> insert into library_audit(book_id,book_name,author,action_date,action_type) values(old.book_id,old.book_name,old.author,now(),'delete');
+    -> end;
+    -> //
+ERROR 1146 (42S02): Table 'Gaurav_ass7.lbrary' doesn't exist
+mysql> create trigger trg_library_delete after delete on library for each row begin insert into library_audit(book_id,book_name,author,action_date,action_type) values(old.book_id,old.book_name,old.author,now(),'delete'); end;//
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> delimiter ;
+mysql> update library set author='Gaurav Saini' where book_id=1;
+Query OK, 1 row affected (0.06 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select* from library;
++---------+--------------+--------------+
+| book_id | book_name    | author       |
++---------+--------------+--------------+
+|       1 | My Book      | Gaurav Saini |
+|       2 | Full Story   | Ram          |
+|       3 | College Days | Navneet      |
+|       4 | Doremon      | Sunita       |
+|       5 | MS Dhoni     | Mahender     |
++---------+--------------+--------------+
+5 rows in set (0.00 sec)
+
+mysql> select* from library_audit;
++----------+---------+-----------+--------+---------------------+-------------+
+| audit_id | book_id | book_name | author | action_date         | action_type |
++----------+---------+-----------+--------+---------------------+-------------+
+|        1 |       1 | My Book   | Gaurav | 2025-09-08 14:43:38 | update      |
++----------+---------+-----------+--------+---------------------+-------------+
+1 row in set (0.00 sec)
+
+mysql> delete from library where book_id=2;
+Query OK, 1 row affected (0.03 sec)
+
+mysql> select* from library;
++---------+--------------+--------------+
+| book_id | book_name    | author       |
++---------+--------------+--------------+
+|       1 | My Book      | Gaurav Saini |
+|       3 | College Days | Navneet      |
+|       4 | Doremon      | Sunita       |
+|       5 | MS Dhoni     | Mahender     |
++---------+--------------+--------------+
+4 rows in set (0.00 sec)
+
+mysql> select* from library_audit;
++----------+---------+------------+--------+---------------------+-------------+
+| audit_id | book_id | book_name  | author | action_date         | action_type |
++----------+---------+------------+--------+---------------------+-------------+
+|        1 |       1 | My Book    | Gaurav | 2025-09-08 14:43:38 | update      |
+|        2 |       2 | Full Story | Ram    | 2025-09-08 14:44:51 | delete      |
++----------+---------+------------+--------+---------------------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> 

@@ -1,0 +1,231 @@
+mysql> select* from student;
++------+--------+--------+------------+
+| SNO  | Name   | Gender | DOB        |
++------+--------+--------+------------+
+|    1 | Ram    | M      | 2000-04-03 |
+|    2 | Gaurav | M      | 2005-12-07 |
+|    3 | Rahul  | M      | 2004-07-09 |
+|    5 | Gita   | NULL   | NULL       |
+|   12 | Mohit  | F      | 2006-07-02 |
++------+--------+--------+------------+
+5 rows in set (0.00 sec)
+
+mysql> create table New(R_no,Name); 
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'Name)' at line 1
+mysql> create table New(R_no int , Name varchar(20));
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> desc New;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| R_no  | int(11)     | YES  |     | NULL    |       |
+| Name  | varchar(20) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> insert into New select SNO, Name from student;
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select* from New;
++------+--------+
+| R_no | Name   |
++------+--------+
+|    1 | Ram    |
+|    2 | Gaurav |
+|    3 | Rahul  |
+|    5 | Gita   |
+|   12 | Mohit  |
++------+--------+
+5 rows in set (0.00 sec)
+
+mysql> delete from New;
+Query OK, 5 rows affected (0.06 sec)
+
+mysql> select* from New;
+Empty set (0.00 sec)
+
+mysql> desc New;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| R_no  | int(11)     | YES  |     | NULL    |       |
+| Name  | varchar(20) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> insert into New values(1,"Rohan");
+Query OK, 1 row affected (0.03 sec)
+
+mysql> drop table New;
+Query OK, 0 rows affected (0.14 sec)
+
+mysql> select* from New;
+ERROR 1146 (42S02): Table 'Demo1.New' doesn't exist
+mysql> desc New;
+ERROR 1146 (42S02): Table 'Demo1.New' doesn't exist
+mysql> drop database Demo1;
+Query OK, 1 row affected (0.18 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| assgn2             |
+| demo               |
+| employee           |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+7 rows in set (0.00 sec)
+
+mysql> create database Movie;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Movie              |
+| assgn2             |
+| demo               |
+| employee           |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+8 rows in set (0.00 sec)
+
+mysql> use Movie;
+Database changed
+mysql> create table movie(m-id int , title varchar(30), release-date date,r date, rank int,PRIMARY KEY(m-id));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '-id int , title varchar(30), release-date date,r date, rank int,PRIMARY KEY(m-id' at line 1
+mysql> create table movie(m-id int , title varchar(30), release-date date, rank int,PRIMARY KEY(m-id));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '-id int , title varchar(30), release-date date, rank int,PRIMARY KEY(m-id))' at line 1
+mysql> create table movie(m_id int , title varchar(30), release_date date, rank int,PRIMARY KEY(m_id));
+Query OK, 0 rows affected (0.28 sec)
+
+mysql> desc movie;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| m_id         | int(11)     | NO   | PRI | NULL    |       |
+| title        | varchar(30) | YES  |     | NULL    |       |
+| release_date | date        | YES  |     | NULL    |       |
+| rank         | int(11)     | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> create table Director(d_id int , Fname varchar(40),Lname varchar(20),Gender char,primary key(d_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> create table Director(d_id int , Fname varchar(40),Lname varchar(20),Gender char,primary key(d_id));
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> desc Director;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| d_id   | int(11)     | NO   | PRI | NULL    |       |
+| Fname  | varchar(40) | YES  |     | NULL    |       |
+| Lname  | varchar(20) | YES  |     | NULL    |       |
+| Gender | char(1)     | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> create table Actor(a_id int , F_name varchar(30), L_name varchar(20));
+Query OK, 0 rows affected (0.23 sec)
+
+mysql> desc actor;
+ERROR 1146 (42S02): Table 'Movie.actor' doesn't exist
+mysql> desc Actor;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| a_id   | int(11)     | YES  |     | NULL    |       |
+| F_name | varchar(30) | YES  |     | NULL    |       |
+| L_name | varchar(20) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> alter table Actor primary key(a_id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'primary key(a_id)' at line 1
+mysql> alter table movie add primary key(a_id);
+ERROR 1072 (42000): Key column 'a_id' doesn't exist in table
+mysql> alter table Actor add primary key(a_id);
+Query OK, 0 rows affected (0.43 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> desc Actor;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| a_id   | int(11)     | NO   | PRI | NULL    |       |
+| F_name | varchar(30) | YES  |     | NULL    |       |
+| L_name | varchar(20) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> insert into movie values(14,"Dilwale","2021-06-09",5);
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into movie values(12,"Parasite","2019-03-02",2),(8,"Robot","2015-09-02",1);
+Query OK, 2 rows affected (0.03 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select* from movie;
++------+----------+--------------+------+
+| m_id | title    | release_date | rank |
++------+----------+--------------+------+
+|    8 | Robot    | 2015-09-02   |    1 |
+|   12 | Parasite | 2019-03-02   |    2 |
+|   14 | Dilwale  | 2021-06-09   |    5 |
++------+----------+--------------+------+
+3 rows in set (0.00 sec)
+
+mysql> insert into director(123,"Narender","Modi","M"),(231,"Mamta","Banerji","F"),(124,"Lalu","Yadav","M"),(122,"Akhilesh","Gupta","M"),(233,"Simran","-","F");
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '123,"Narender","Modi","M"),(231,"Mamta","Banerji","F"),(124,"Lalu","Yadav","M"),' at line 1
+mysql> insert into director values(123,"Narender","Modi","M"),(231,"Mamta","Banerji","F"),(124,"Lalu","Yadav","M"),(122,"Akhilesh","Gupta","M"),(233,"Simran","-","F");
+ERROR 1146 (42S02): Table 'Movie.director' doesn't exist
+mysql> desc director;
+ERROR 1146 (42S02): Table 'Movie.director' doesn't exist
+mysql> insert into Director values(123,"Narender","Modi","M"),(231,"Mamta","Banerji","F"),(124,"Lalu","Yadav","M"),(122,"Akhilesh","Gupta","M"),(233,"Simran","-","F");
+Query OK, 5 rows affected (0.04 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select* from Director;
++------+----------+---------+--------+
+| d_id | Fname    | Lname   | Gender |
++------+----------+---------+--------+
+|  122 | Akhilesh | Gupta   | M      |
+|  123 | Narender | Modi    | M      |
+|  124 | Lalu     | Yadav   | M      |
+|  231 | Mamta    | Banerji | F      |
+|  233 | Simran   | -       | F      |
++------+----------+---------+--------+
+5 rows in set (0.00 sec)
+
+mysql> insert into Actor values(12,"Akshay","Kumar"),(11,"Salman","Khan"),(1,"Ranbir","Kapoor"),(2,"Alia","Bhat"),(4,"Tiger","shrof"),(7,"Sushant","Singh"),(5,"Kesari","ji");
+Query OK, 7 rows affected (0.05 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> selet* from Actor;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'selet* from Actor' at line 1
+mysql> select* from Actor;
++------+---------+--------+
+| a_id | F_name  | L_name |
++------+---------+--------+
+|    1 | Ranbir  | Kapoor |
+|    2 | Alia    | Bhat   |
+|    4 | Tiger   | shrof  |
+|    5 | Kesari  | ji     |
+|    7 | Sushant | Singh  |
+|   11 | Salman  | Khan   |
+|   12 | Akshay  | Kumar  |
++------+---------+--------+
+7 rows in set (0.00 sec)
+
+mysql> 

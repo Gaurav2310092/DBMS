@@ -1,0 +1,112 @@
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Circle             |
+| Gaurav             |
+| Gaurav_ass5        |
+| Movie              |
+| abhay_assg4        |
+| abhay_assgn2       |
+| abhay_assgn5       |
+| ass4               |
+| ass5               |
+| ass6               |
+| ass6_7361          |
+| ass7               |
+| assgn2             |
+| demo               |
+| mock               |
+| mockTest           |
+| mysql              |
+| performance_schema |
+| student            |
+| students           |
+| sys                |
+| vanshika_ass2      |
++--------------------+
+23 rows in set (0.00 sec)
+
+mysql> create database assignment6;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> use assignment6;
+Database changed
+mysql> create table O_Rollcall(
+    -> id INT primary key,
+    -> name varchar(255) not null,
+    -> roll_call_date DATE NOT NULL);
+Query OK, 0 rows affected (0.23 sec)
+
+mysql> create table N_Rollcall(
+    -> id INT primary key,
+    -> name varchar(255) not null,
+    -> roll_call_date DATE NOT NULL);
+Query OK, 0 rows affected (0.24 sec)
+
+mysql> insert into N_Rollcall(id,name,roll_call_date) values(1,'Amit','2025-08-01'),(2,'Gaurav','2025-08-02'),(3,'Rahul','2025-08-03'),(4,'Ram','2025-08-04'),(5,'Vikram','2025-08-05'),(6,'Neha','2025-08-06'),(7,'Arjun','2025-08-08');
+Query OK, 7 rows affected (0.04 sec)
+Records: 7  Duplicates: 0  Warnings: 0
+
+mysql> insert into O_Rollcall values(11,'Saran','2005-08-22');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> delimiter $$
+mysql> create procedure MergeRollCallData()
+    -> begin
+    -> declare done INT Default 0;
+    -> declare n_id INT;
+    -> declare n_name varchar(255);
+    -> declare n_date DATE;
+    -> 
+    -> declare cur cursor for 
+    -> select id,name ,roll_call_date from N_Rollcall;
+    -> 
+    -> declare continue handler for not found set done =1;
+    -> 
+    -> open cur;
+    -> 
+    -> read_loop:LOOP
+    -> fetch cur INTO n_id ,n_name,n_date;
+    -> if done then
+    -> leave read_loop;
+    -> end if;
+    -> 
+    -> id not exists(select 1 from O_Rollcall where id=n_id
+    -> and name=n_name
+    -> and roll_call_date=n_date
+    -> )then
+    -> insert into O_Rollcall(id,name,roll_call_date)
+    -> values(n_id,n_name,n_date);
+    -> end if;
+    -> end loop;
+    -> 
+    -> close cur;
+    -> end $$
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'not exists(select 1 from O_Rollcall where id=n_id
+and name=n_name
+and roll_call_' at line 21
+mysql> create procedure MergeRollCallData() begin declare done INT Default 0; declare n_id INT; declare n_name varchar(255); declare n_date DATE;  declare cur cursor for  select id,name ,roll_call_date from N_Rollcall;  declare continue handler for not found set done =1;  open cur;  read_loop:LOOP fetch cur INTO n_id ,n_name,n_date; if done then leave read_loop; end if;  if not exists(select 1 from O_Rollcall where id=n_id and name=n_name and roll_call_date=n_date )then insert into O_Rollcall(id,name,roll_call_date) values(n_id,n_name,n_date); end if; end loop;  close cur; end$$
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+mysql> call MergeRollCallData();
+Query OK, 0 rows affected (0.40 sec)
+
+mysql> select* from O_Rollcall;
++----+--------+----------------+
+| id | name   | roll_call_date |
++----+--------+----------------+
+|  1 | Amit   | 2025-08-01     |
+|  2 | Gaurav | 2025-08-02     |
+|  3 | Rahul  | 2025-08-03     |
+|  4 | Ram    | 2025-08-04     |
+|  5 | Vikram | 2025-08-05     |
+|  6 | Neha   | 2025-08-06     |
+|  7 | Arjun  | 2025-08-08     |
+| 11 | Saran  | 2005-08-22     |
++----+--------+----------------+
+8 rows in set (0.00 sec)
+
+mysql> 

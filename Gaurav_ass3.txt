@@ -1,0 +1,329 @@
+mysql> create procedure mysquare(in i int, out sq int)
+    -> begin
+    -> set sq=i*i;
+    -> end;
+    -> //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call mysquare(4,@x)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select @x //
++------+
+| @x   |
++------+
+|   16 |
++------+
+1 row in set (0.00 sec)
+
+mysql> create procedure mysql1(in out x )
+    -> begin
+    -> set x=x*x;
+    -> end;
+    -> //
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'out x )
+begin
+set x=x*x;
+end' at line 1
+mysql> create procedure mysql1(in out x) begin set x=x*x; end;//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'out x) begin set x=x*x; end' at line 1
+mysql> create procedure mysql1(in out x int) begin set x=x*x; end;//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'out x int) begin set x=x*x; end' at line 1
+mysql> create procedure mysql1(inout x int) begin set x=x*x; end;//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> set @y=4//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call mysql1(@y)//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select @y//
++------+
+| @y   |
++------+
+|   16 |
++------+
+1 row in set (0.00 sec)
+
+mysql> create my_function mysql2(in i int)
+    -> ;
+    -> ^C
+mysql> create function mysql2(in i int)
+    -> return int deterministic;
+    -> begin
+    -> i*i
+    -> end;
+    -> //
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'in i int)
+return int deterministic;
+begin
+i*i
+end' at line 1
+mysql> create function mysql2(in i int) returns int deterministic; begin i*i end;//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'in i int) returns int deterministic; begin i*i end' at line 1
+mysql> create function mysql2(in i int) returns int deterministic begin i*i end;//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'in i int) returns int deterministic begin i*i end' at line 1
+mysql> create function mysql2(i int) returns int deterministic begin i*i end;//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '*i end' at line 1
+mysql> create function mysql2(i int) returns int deterministic begin return i*i end;//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'end' at line 1
+mysql> create function mysql2(i int) returns int deterministic begin return i*i; end;//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select mysql2(3)//
++-----------+
+| mysql2(3) |
++-----------+
+|         9 |
++-----------+
+1 row in set (0.00 sec)
+
+mysql> create procedure mysql3(inout i int)
+    -> begin
+    -> select i;
+    -> if i%2=0 then  
+    -> select "Number is Even";
+    -> else
+    -> select "Number is Odd";
+    -> end if
+    -> end;
+    -> //
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'end' at line 9
+mysql> create procedure mysql3(inout i int) begin select i; if i%2=0 then   select "Number is Even"; else select "Number is Odd"; end if; end;//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call mysql3(12)//
+ERROR 1414 (42000): OUT or INOUT argument 1 for routine Movie.mysql3 is not a variable or NEW pseudo-variable in BEFORE trigger
+mysql> create procedure evenodd(in i int) begin select i; if i%2=0 then   select "Number is Even"; else select "Number is Odd"; end if; end;//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call evenodd(12)//
++------+
+| i    |
++------+
+|   12 |
++------+
+1 row in set (0.00 sec)
+
++----------------+
+| Number is Even |
++----------------+
+| Number is Even |
++----------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call evenodd(1)//
++------+
+| i    |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+
++---------------+
+| Number is Odd |
++---------------+
+| Number is Odd |
++---------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> select* from movie;
+    -> show tables;
+    -> ^C
+mysql> select * from movie;
+    -> ^C
+mysql> create procedure demo(i int)
+    -> begin
+    -> declare name varchar(20);
+    -> select title into name from movie where mid=i;
+    -> end;
+    -> //
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> show databases;
+    -> ^C
+mysql> select* from movie//
++------+------------+--------------+------+
+| m_id | title      | release_date | rank |
++------+------------+--------------+------+
+|    8 | Robot      | 2015-09-02   |    1 |
+|   12 | Parasite   | 2019-03-02   |    2 |
+|   14 | Dilwale    | 2021-06-09   |    5 |
+|   15 | Dangal     | 2009-02-04   |    3 |
+|   16 | Ravan      | 2015-05-03   |    8 |
+|   17 | War        | 2021-02-09   |   12 |
+|   24 | PK         | 2012-05-09   |    4 |
+|   34 | Ram Lakhan | 2012-09-02   |    7 |
+|   67 | Sholay     | 2005-08-09   |    6 |
++------+------------+--------------+------+
+9 rows in set (0.00 sec)
+
+mysql> call demo(15)//
+ERROR 1054 (42S22): Unknown column 'mid' in 'where clause'
+mysql> create procedure demo(i int) begin declare name varchar(20); select title into name from movie where m_id=i; end;//
+ERROR 1304 (42000): PROCEDURE demo already exists
+mysql> create procedure demo1(i int) begin declare name varchar(20); select title into name from movie where m_id=i; end;//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call demo1(15)//
+Query OK, 1 row affected (0.00 sec)
+
+mysql> selct name//
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'selct name' at line 1
+mysql> drop procedure demo//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> create procedure demo(i int) begin declare name varchar(20); select title into name from movie where m_id=i; select name; end;//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call demo(15)//
++--------+
+| name   |
++--------+
+| Dangal |
++--------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> create procedure demo2(i int) begin declare name varchar(20); SELECT a_id
+    -> FROM Cast
+    -> WHERE m_id = (SELECT m_id FROM Movie WHERE title = 'Lagaan')
+    -> AND a_id IN (
+    ->     SELECT a_id
+    ->     FROM Cast
+    -> ^C
+mysql> create procedure demo2(i int) begin update movie set rank=3 where m_id=i; end;//
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> call demo2(15)//
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> select* from movie//
++------+------------+--------------+------+
+| m_id | title      | release_date | rank |
++------+------------+--------------+------+
+|    8 | Robot      | 2015-09-02   |    1 |
+|   12 | Parasite   | 2019-03-02   |    2 |
+|   14 | Dilwale    | 2021-06-09   |    5 |
+|   15 | Dangal     | 2009-02-04   |    3 |
+|   16 | Ravan      | 2015-05-03   |    8 |
+|   17 | War        | 2021-02-09   |   12 |
+|   24 | PK         | 2012-05-09   |    4 |
+|   34 | Ram Lakhan | 2012-09-02   |    7 |
+|   67 | Sholay     | 2005-08-09   |    6 |
++------+------------+--------------+------+
+9 rows in set (0.00 sec)
+
+mysql> create procedure demo3(i int) begin update movie set rank=7 where m_id=i; end;//
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> call demo3(15)//
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select* from movie//
++------+------------+--------------+------+
+| m_id | title      | release_date | rank |
++------+------------+--------------+------+
+|    8 | Robot      | 2015-09-02   |    1 |
+|   12 | Parasite   | 2019-03-02   |    2 |
+|   14 | Dilwale    | 2021-06-09   |    5 |
+|   15 | Dangal     | 2009-02-04   |    7 |
+|   16 | Ravan      | 2015-05-03   |    8 |
+|   17 | War        | 2021-02-09   |   12 |
+|   24 | PK         | 2012-05-09   |    4 |
+|   34 | Ram Lakhan | 2012-09-02   |    7 |
+|   67 | Sholay     | 2005-08-09   |    6 |
++------+------------+--------------+------+
+9 rows in set (0.00 sec)
+
+mysql> show databases;
+    -> show databases//
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Movie              |
+| abhay_assgn2       |
+| assgn2             |
+| demo               |
+| mysql              |
+| performance_schema |
+| sys                |
+| vanshika_ass2      |
++--------------------+
+9 rows in set (0.01 sec)
+
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Movie              |
+| abhay_assgn2       |
+| assgn2             |
+| demo               |
+| mysql              |
+| performance_schema |
+| sys                |
+| vanshika_ass2      |
++--------------------+
+9 rows in set (0.01 sec)
+
+mysql> create database Circle;
+    -> create database Circle//
+Query OK, 1 row affected (0.00 sec)
+
+ERROR 1007 (HY000): Can't create database 'Circle'; database exists
+mysql> create database Gaurav;
+    -> ^C
+mysql> create database Gaurav//
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show databases;
+    -> show databases//
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Circle             |
+| Gaurav             |
+| Movie              |
+| abhay_assgn2       |
+| assgn2             |
+| demo               |
+| mysql              |
+| performance_schema |
+| sys                |
+| vanshika_ass2      |
++--------------------+
+11 rows in set (0.00 sec)
+
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Circle             |
+| Gaurav             |
+| Movie              |
+| abhay_assgn2       |
+| assgn2             |
+| demo               |
+| mysql              |
+| performance_schema |
+| sys                |
+| vanshika_ass2      |
++--------------------+
+11 rows in set (0.00 sec)
+
+mysql> use Gaurav;
+ERROR 1049 (42000): Unknown database 'Gaurav;'
+mysql> use Gaurav;
+ERROR 1049 (42000): Unknown database 'Gaurav;'
+mysql> use Gaurav//
+Database changed
+mysql> 

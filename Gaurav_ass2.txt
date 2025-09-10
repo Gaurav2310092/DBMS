@@ -1,0 +1,164 @@
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| Movie              |
+| abhay_assgn2       |
+| assgn2             |
+| demo               |
+| mysql              |
+| performance_schema |
+| sys                |
+| vanshika_ass2      |
++--------------------+
+9 rows in set (0.00 sec)
+
+mysql> select* from movie;
+ERROR 1046 (3D000): No database selected
+mysql> use Movie;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> select* from movie;
++------+------------+--------------+------+
+| m_id | title      | release_date | rank |
++------+------------+--------------+------+
+|    8 | Robot      | 2015-09-02   |    1 |
+|   12 | Parasite   | 2019-03-02   |    2 |
+|   14 | Dilwale    | 2021-06-09   |    5 |
+|   15 | Dangal     | 2009-02-04   |    7 |
+|   16 | Ravan      | 2015-05-03   |    8 |
+|   17 | War        | 2021-02-09   |   12 |
+|   24 | PK         | 2012-05-09   |    4 |
+|   34 | Ram Lakhan | 2012-09-02   |    7 |
+|   67 | Sholay     | 2005-08-09   |    6 |
++------+------------+--------------+------+
+9 rows in set (0.00 sec)
+
+mysql> select* from Actor;
++------+---------+--------+-----------+
+| a_id | F_name  | L_name | pay       |
++------+---------+--------+-----------+
+|    1 | Ranbir  | Kapoor | 560000.00 |
+|    4 | Tiger   | shrof  |      NULL |
+|    5 | Kesari  | ji     |      NULL |
+|    7 | Sushant | Singh  | 400000.00 |
+|    9 | Ranbir  | Kapoor |      NULL |
+|   11 | Salman  | Khan   |      NULL |
+|   12 | Akshay  | Kumar  |      NULL |
+|   13 | Ranbir  | Kapoor |      NULL |
+|   20 | Amir    | Khan   | 600000.00 |
+|   24 | Karena  | Kapoor |      NULL |
++------+---------+--------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> select* from MovieCast;
++------+------+------------+
+| m_id | a_id | role       |
++------+------+------------+
+|   16 |   24 | Actress    |
+|   24 |   20 | Lead_Role  |
+|    8 |    1 | Lead_Actor |
+|   34 |    1 | Lead_Actor |
+|   17 |    7 | Actor      |
+|   24 |    7 | Actress    |
+|   15 |   20 | Lead_Actor |
++------+------+------------+
+7 rows in set (0.00 sec)
+
+mysql> select* from Direct;
++------+------+
+| m_id | d_id |
++------+------+
+|    8 |  342 |
+|   16 |  342 |
+|   24 |  342 |
+|   12 |  122 |
+|   14 |  233 |
++------+------+
+5 rows in set (0.00 sec)
+
+mysql> select* from Director;
++------+----------+---------+--------+
+| d_id | Fname    | Lname   | Gender |
++------+----------+---------+--------+
+|  122 | Akhilesh | Gupta   | M      |
+|  123 | Narender | Modi    | M      |
+|  124 | Lalu     | Yadav   | M      |
+|  231 | Mamta    | Banerji | F      |
+|  233 | Simran   | -       | F      |
+|  342 | Yash     | Chopra  | M      |
++------+----------+---------+--------+
+6 rows in set (0.00 sec)
+
+mysql> select distinct a.a_id , a.f_name,a.l_name from Actor a join MovieCast c on a.a_id=c.a_id join movie m on c.m_id=m.m_id where m.title in("Sholay","War");
++------+---------+--------+
+| a_id | f_name  | l_name |
++------+---------+--------+
+|    7 | Sushant | Singh  |
++------+---------+--------+
+1 row in set (0.00 sec)
+
+mysql> select title,fname,lname fro movie m join Direct dr on m.m_id =dr.m_id join Director d on dr.d_id=d.d_id 
+    -> where year(m.release_date)=2005 order by m.rank desc;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'movie m join Direct dr on m.m_id =dr.m_id join Director d on dr.d_id=d.d_id 
+whe' at line 1
+mysql> select title,fname,lname fro movie m join Direct dr on m.m_id =dr.m_id join Director d on dr.d_id=d.d_id  where year(m.release_date)=2005 order by m.rank desc limit 5;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'movie m join Direct dr on m.m_id =dr.m_id join Director d on dr.d_id=d.d_id  whe' at line 1
+mysql> SELECT m.title, d.fname, d.lname
+    -> FROM Movie m
+    -> JOIN Direct dr ON m.m_id = dr.m_id
+    -> JOIN Director d ON dr.d_id = d.d_id
+    -> WHERE YEAR(m.release_date) = 2019
+    -> ORDER BY m.rank DESC
+    -> LIMIT 5;
+ERROR 1146 (42S02): Table 'Movie.Movie' doesn't exist
+mysql> SELECT m.title, d.fname, d.lname FROM movie m JOIN Direct dr ON m.m_id = dr.m_id JOIN Director d ON dr.d_id = d.d_id WHERE YEAR(m.release_date) = 2019 ORDER BY m.rank DESC LIMIT 5;
++----------+----------+-------+
+| title    | fname    | lname |
++----------+----------+-------+
+| Parasite | Akhilesh | Gupta |
++----------+----------+-------+
+1 row in set (0.00 sec)
+
+mysql> SELECT m.title, COUNT(c.a_id) AS total_actors
+    -> FROM Movie m
+    -> LEFT JOIN Cast c ON m.m_id = c.m_id
+    -> GROUP BY m.m_id, m.title;
+ERROR 1146 (42S02): Table 'Movie.Movie' doesn't exist
+mysql> SELECT m.title, COUNT(c.a_id) AS total_actors FROM movie m LEFT JOIN MovieCast c ON m.m_id = c.m_id GROUP BY m.m_id, m.title;
++------------+--------------+
+| title      | total_actors |
++------------+--------------+
+| Robot      |            1 |
+| Parasite   |            0 |
+| Dilwale    |            0 |
+| Dangal     |            1 |
+| Ravan      |            1 |
+| War        |            1 |
+| PK         |            2 |
+| Ram Lakhan |            1 |
+| Sholay     |            0 |
++------------+--------------+
+9 rows in set (0.01 sec)
+
+mysql> SELECT c.role
+    -> FROM Cast c
+    -> JOIN Actor a ON c.a_id = a.a_id
+    -> WHERE a.salary > 200000;
+ERROR 1146 (42S02): Table 'Movie.Cast' doesn't exist
+mysql> select c.role from MovieCast c join Actor a on c.a_id =a.a_id where a.salary>200000;
+ERROR 1054 (42S22): Unknown column 'a.salary' in 'where clause'
+mysql> select m.* from movie m join Direct dr on m.m_id =dr.m_id join Director don dr.d_id=d.d_id where d.gender="F";
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dr.d_id=d.d_id where d.gender="F"' at line 1
+mysql> select m.* from movie m join Direct dr on m.m_id =dr.m_id join Director don dr.d_id=d.d_id where d.Gender="F";
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dr.d_id=d.d_id where d.Gender="F"' at line 1
+mysql> select m.* from movie m join Direct dr on m.m_id =dr.m_id join Director don dr.d_id=d.d_id where d.Gender="F";
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'dr.d_id=d.d_id where d.Gender="F"' at line 1
+mysql> select c.m_id ,a.a_id ,a.f_name,a.l_name,a.salary from MovieCast c join Actor a on c.a_id =a.a_id where(c.m_id ,a.salary) in (select m_id , max(a2.salary) from MovieCast c2 join Actor a2 on c2.a_id =a2.a_id group by m_id);
+ERROR 1054 (42S22): Unknown column 'a.salary' in 'field list'
+mysql> selct m.* from movie m natural join Direct dr natural join Director d where d.fname="Yash" and d.lname="Chopra";
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'selct m.* from movie m natural join Direct dr natural join Director d where d.fn' at line 1
+mysql> 
