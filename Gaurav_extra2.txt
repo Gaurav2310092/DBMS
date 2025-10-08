@@ -1,0 +1,102 @@
+mysql> use Computer;
+Database changed
+mysql> select* from student;
++------+----------+-------+
+| id   | name     | marks |
++------+----------+-------+
+|    1 | Gaurav   |    43 |
+|    2 | Nikhil   |    89 |
+|    3 | Mahendra |    67 |
+|    5 | Dushyant |    78 |
+|    4 | Navneet  |    90 |
+|    7 | Rohan    |    56 |
++------+----------+-------+
+6 rows in set (0.00 sec)
+
+mysql> insert into student(id,name,marks) values(6,"Aman",90),(8,"Sita",89);
+Query OK, 2 rows affected (0.08 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select* from student;
++------+----------+-------+
+| id   | name     | marks |
++------+----------+-------+
+|    1 | Gaurav   |    43 |
+|    2 | Nikhil   |    89 |
+|    3 | Mahendra |    67 |
+|    5 | Dushyant |    78 |
+|    4 | Navneet  |    90 |
+|    7 | Rohan    |    56 |
+|    6 | Aman     |    90 |
+|    8 | Sita     |    89 |
++------+----------+-------+
+8 rows in set (0.00 sec)
+
+mysql> create table deleted_student(id int primary key, name varchar(40) , marks int , deleted_time DATETIME DEFAULT CURRENT_TIMESTAMP);
+Query OK, 0 rows affected (0.18 sec)
+
+mysql> 
+mysql> delimiter $$
+mysql> 
+mysql> create trigger before_delete
+    -> before delete on student 
+    -> for each row
+    -> begin
+    -> insert into deleted_student(id,name,marks)values(OLD.id,OLD.name,OLD.marks);
+    -> END $$
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> delete from student where id=2;
+    -> $$
+Query OK, 1 row affected (0.04 sec)
+
+mysql> 
+mysql> delimiter ;
+mysql> select * from student;
++------+----------+-------+
+| id   | name     | marks |
++------+----------+-------+
+|    1 | Gaurav   |    43 |
+|    3 | Mahendra |    67 |
+|    5 | Dushyant |    78 |
+|    4 | Navneet  |    90 |
+|    7 | Rohan    |    56 |
+|    6 | Aman     |    90 |
+|    8 | Sita     |    89 |
++------+----------+-------+
+7 rows in set (0.00 sec)
+
+mysql> select* from deleted_student;
++----+--------+-------+---------------------+
+| id | name   | marks | deleted_time        |
++----+--------+-------+---------------------+
+|  2 | Nikhil |    89 | 2025-10-08 11:26:35 |
++----+--------+-------+---------------------+
+1 row in set (0.00 sec)
+
+mysql> delete from student where marks=56;
+Query OK, 1 row affected (0.03 sec)
+
+mysql> select* from student;
++------+----------+-------+
+| id   | name     | marks |
++------+----------+-------+
+|    1 | Gaurav   |    43 |
+|    3 | Mahendra |    67 |
+|    5 | Dushyant |    78 |
+|    4 | Navneet  |    90 |
+|    6 | Aman     |    90 |
+|    8 | Sita     |    89 |
++------+----------+-------+
+6 rows in set (0.00 sec)
+
+mysql> select* from deleted_student;
++----+--------+-------+---------------------+
+| id | name   | marks | deleted_time        |
++----+--------+-------+---------------------+
+|  2 | Nikhil |    89 | 2025-10-08 11:26:35 |
+|  7 | Rohan  |    56 | 2025-10-08 11:27:31 |
++----+--------+-------+---------------------+
+2 rows in set (0.00 sec)
+
+mysql>

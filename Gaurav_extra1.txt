@@ -1,0 +1,110 @@
+mysql>
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.04 sec)
+
+mysql> create database Computer;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> use Computer;
+Database changed
+mysql> create table student(id int , name varchar(40) , marks int);
+Query OK, 0 rows affected (0.22 sec)
+
+mysql> insert into student(id ,name, marks) values(1,"Gaurav",43),(2,"Nikhil",89),(3,"Mahendra",67),(5,"Dushyant",78),(4,"Navneet",90),(7,"Rohan",56);
+Query OK, 6 rows affected (0.02 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> select* from student;
++------+----------+-------+
+| id   | name     | marks |
++------+----------+-------+
+|    1 | Gaurav   |    43 |
+|    2 | Nikhil   |    89 |
+|    3 | Mahendra |    67 |
+|    5 | Dushyant |    78 |
+|    4 | Navneet  |    90 |
+|    7 | Rohan    |    56 |
++------+----------+-------+
+6 rows in set (0.00 sec)
+
+mysql> delimiter $$
+mysql> 
+mysql> create procedure show_student()
+    -> begin
+    -> declare p1 INT default 0;
+    -> declare stu_id INT;
+    -> declare stu_name varchar(40);
+    -> declare stu_marks INT;
+    -> 
+    -> declare cur CURSOR FOR SELECT id,name,marks from student;
+    -> DECLARE CONTINUE HANDLER FOR NOT FOUND SET p1=1;
+    -> 
+    -> open cur;
+    -> 
+    -> read_loop: LOOP
+    -> fetch cur into stu_id,stu_name,stu_marks;
+    -> if p1=1 then 
+    -> leave read_loop;
+    -> end if;
+    -> 
+    -> select stu_id,stu_name,stu_marks;
+    -> end LOOP;
+    -> 
+    -> close cur;
+    -> end $$
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> call show_student()$$
++--------+----------+-----------+
+| stu_id | stu_name | stu_marks |
++--------+----------+-----------+
+|      1 | Gaurav   |        43 |
++--------+----------+-----------+
+1 row in set (0.02 sec)
+
++--------+----------+-----------+
+| stu_id | stu_name | stu_marks |
++--------+----------+-----------+
+|      2 | Nikhil   |        89 |
++--------+----------+-----------+
+1 row in set (0.02 sec)
+
++--------+----------+-----------+
+| stu_id | stu_name | stu_marks |
++--------+----------+-----------+
+|      3 | Mahendra |        67 |
++--------+----------+-----------+
+1 row in set (0.02 sec)
+
++--------+----------+-----------+
+| stu_id | stu_name | stu_marks |
++--------+----------+-----------+
+|      5 | Dushyant |        78 |
++--------+----------+-----------+
+1 row in set (0.02 sec)
+
++--------+----------+-----------+
+| stu_id | stu_name | stu_marks |
++--------+----------+-----------+
+|      4 | Navneet  |        90 |
++--------+----------+-----------+
+1 row in set (0.02 sec)
+
++--------+----------+-----------+
+| stu_id | stu_name | stu_marks |
++--------+----------+-----------+
+|      7 | Rohan    |        56 |
++--------+----------+-----------+
+1 row in set (0.02 sec)
+
+Query OK, 0 rows affected (0.02 sec)
+
+mysql>
